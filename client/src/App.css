@@ -1,0 +1,13 @@
+.app{
+    background-image: url("homepage.jpg");
+    height: 520px;
+    background-size:cover;
+    background-repeat: no-repeat;
+    background-position: 50% 10%;
+}
+@media screen and (min-width : 0px) and (max-width : 767px){
+    .app{height:680px}
+    .logout{
+         padding:3px
+    }
+    }

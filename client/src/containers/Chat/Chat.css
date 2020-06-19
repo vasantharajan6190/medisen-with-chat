@@ -1,0 +1,29 @@
+.chat{
+    background-color:#017c9e;
+    min-height:620px;
+    max-height:auto
+}
+
+@media screen and (min-width : 0px) and (max-width : 767px){
+    .chat{
+        min-height:680px;
+        height:100%
+    }
+    }
+.main{
+    height:auto;
+    background-color: aliceblue;
+}
+.mess{
+    font-family: 'Oswald', sans-serif;
+}
+.mess1{
+    font-family: 'Heebo', sans-serif;
+    
+}
+.back{
+    background-color:#a5f29c9c;
+    padding: 15px;
+    display: inline-block;
+    border-radius: 0% 1% 4% 9%/4% 6% 2% 40%;
+}

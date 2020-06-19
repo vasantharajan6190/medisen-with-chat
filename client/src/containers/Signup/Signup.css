@@ -1,0 +1,8 @@
+.signup{
+    background-color:#017c9e;
+    height:auto;
+    min-height: 600px;
+}
+@media screen and (min-width : 0px) and (max-width : 767px){
+    .signup{height:100%}
+    }
