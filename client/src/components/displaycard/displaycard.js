@@ -14,6 +14,7 @@ function Displaycard(props){
     const [currentuser,setcurrentuser] = main.currentuser
     const [room,setroom] = main.room
     const [currentcard,setcurrentcard] = useState(props.res)
+    const [sendto,setsendto] = main.sendto
     async function onclick(e){
         e.preventDefault()
         if(appointments.length===0){
@@ -108,6 +109,17 @@ function Displaycard(props){
     }
     async function gotochat(e){
       e.preventDefault()
+      const name = currentcard.name
+      const img = currentcard.image
+      let  id
+      const role = currentcard.role
+      if(role==="doctor"){
+        id = currentcard.doc_id
+      }
+      else if(role==="clinic"){
+          id = currentcard.cli_id
+      }
+      setsendto({name,img,id,role})
       const roomname = (currentcard.name+currentuser.name).trim()
       setroom(roomname)
       history.push("/chat")

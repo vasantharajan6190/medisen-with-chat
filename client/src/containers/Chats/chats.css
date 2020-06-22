@@ -1,0 +1,23 @@
+.chats{
+    background-color:#017c9e;
+    min-height:620px;
+    max-height:auto
+}
+
+@media screen and (min-width : 0px) and (max-width : 767px){
+    .chats{
+        min-height:680px;
+        height:100%
+    }
+    }
+    .mess{
+        font-family: 'Oswald', sans-serif;
+    }
+    .main{
+        height:auto;
+        background-color: aliceblue;
+    }
+  .users:hover{
+     cursor: pointer;
+     background-color: lightgrey;
+ }  

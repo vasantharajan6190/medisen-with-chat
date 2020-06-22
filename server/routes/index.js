@@ -132,5 +132,33 @@ try {
     res.json(error)
 }
 })
+//messages
+//post message
+router.post("/message",async(req,res)=>{
+    try {
+        const result = await controller.postmessage(req.body)
+        res.json(result)
+    } catch (error) {
+        res.json(error)
+    }
+})
+//get messages by id
+router.get("/message",async(req,res)=>{
+    try {
+        const result = await controller.getmessages(req.query)
+        res.json(result)
+    } catch (error) {
+        res.json(error)
+    }
+})
+//get message by roomname
+router.get("/messagebyroomname",async(req,res)=>{
+    try {
+        const result = await controller.getmessagesbyroomname(req.query)
+        res.json(result)
+    } catch (error) {
+        res.json(error)
+    }
+})
 
 module.exports = router

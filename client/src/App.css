@@ -1,13 +1,30 @@
 .app{
     background-image: url("homepage.jpg");
-    height: 520px;
+    height: 720px;
     background-size:cover;
     background-repeat: no-repeat;
     background-position: 50% 10%;
 }
 @media screen and (min-width : 0px) and (max-width : 767px){
-    .app{height:680px}
+    .app{height:880px}
     .logout{
          padding:3px
     }
     }
+.sample{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin-right:22px;
+    margin-bottom: 15px;
+}
+.chathead{
+    cursor: pointer;
+}
+.chathead:hover{
+    color:yellow !important
+}
+.x:hover{
+    cursor: pointer;
+    color: red !important;
+}

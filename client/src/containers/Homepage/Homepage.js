@@ -5,6 +5,9 @@ import {createcontext} from "../../App"
 import Displaycard from "../../components/displaycard/displaycard"
 import Doccards from "../../components/doccards/Doccards"
 import {unregister} from "../../Interceptor"
+import io from "socket.io-client"
+let socket
+let onlineusers = []
 function Homepage(props){
     let display = false
     let unknown = false
@@ -14,13 +17,16 @@ function Homepage(props){
     const [loggedin,setloggedin] = main.loggedin
     if(loggedin===false)
     {window.location = "/login"}
+    const endpoint = "localhost:5000/chat"
     const [currentuser,setcurrentuser] = main.currentuser
+    const [users,setusers] = main.users
     const [appointments,setappointments] = main.appointments
     const [doctors,setdoctors] = main.doctors
     const [clinic,setclinic] = main.clinic
     const [docappointments,setdocappointments] = main.docappointments
     const [patients,setpatients] = main.patients
     const [clicked,setclicked] = useState(false)
+    const [online,setonline] = main.online
     const [specialization,setspecialization] = main.specialization
     let unable=true
     async function getappointments(){
@@ -44,18 +50,45 @@ function Homepage(props){
            setdocappointments(result)
         }
     }
-    useEffect(()=>{getappointments()},[])
+    socket = io(endpoint)
+    useEffect(()=>{getappointments()
+        socket.emit("login",{name:currentuser.name})
+      
+    },[])
+   
+    socket.on("online",(name)=>{
+        setonline(name.name)
+    })
     function onchange(e){
         setsearch(e.target.value)
         setsearchresult([])
         setclicked(false)
     }
-    
+    async function getusers(){
+        const role = currentuser.role
+        let id
+        if(role==="doctor"){
+            id= currentuser.doc_id
+        }
+        if(role==="clinic"){
+            id= currentuser.cli_id
+        }
+        if(role==="patient"){
+            id= currentuser.pat_id
+        }
+        const ans = await fetch(`http://localhost:5000/message?id=${id}&role=${role}`,{headers:{}})
+        const res = await ans.json()
+        setusers(res)
+    }
+    useEffect(()=>{
+      getusers()
+     
+    },[loggedin])
     function onsubmit(e){
         e.preventDefault()
         doctors.map(res=>{
             if(res.specializations.toLowerCase()===search.toLowerCase()){
-                const doc = {name:`Dr.${res.name}`,role:res.role,doc_id:res.doc_id,mobile:res.mobile,specializations:res.specializations,from:res.from,to:res.to,address:res.address,booked:true,removed:false,image:res.image}
+                const doc = {name:`${res.name}`,role:res.role,doc_id:res.doc_id,mobile:res.mobile,specializations:res.specializations,from:res.from,to:res.to,address:res.address,booked:true,removed:false,image:res.image}
                   setsearchresult(prev=>[...prev,{...doc}])
             }
         })

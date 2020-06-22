@@ -13,6 +13,7 @@ function Doccards({res}){
     const main = useContext(createcontext)
     const [currentuser,setcurrentuser] = main.currentuser
     const [docappointments,setdocappointments] = main.docappointments
+    const [sendto,setsendto] = main.sendto
     const [room,setroom] = main.room
     async function onclick(e){
         e.preventDefault()
@@ -41,6 +42,11 @@ function Doccards({res}){
     }
     async function gotochat(e){
          e.preventDefault()
+         const name = res.name
+         const img = res.image
+         const id = res.pat_id
+         const role = res.role
+         setsendto({name,img,id,role})
          const roomname = (currentuser.name+res.name).trim()
          setroom(roomname)
          history.push("/chat")

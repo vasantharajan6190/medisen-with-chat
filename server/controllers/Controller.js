@@ -4,6 +4,7 @@ const Patient = require("../models/patient")
 const jwt = require("jsonwebtoken")
 const tokengenerator = require("../utils/tokengenerator")
 const Clinic = require("../models/clinic")
+const Message = require("../models/message")
 const Specialization = require("../models/specializations")
 const Appointment = require("../models/appointment")
 const fileUpload = require('express-fileupload')
@@ -258,6 +259,120 @@ async function imageupload(body){
              return ans
          }
 }
+async function postmessage(body){
+  const {sendid,receiveid,sender,receiver,roomname,time,profileimg,message,createdby} = body
+  if(sender==="patient"){
+      if(receiver==="doctor"){
+          const ans = await Message.create({pat_id:sendid,doc_id:receiveid,createdby,roomname,time,profileimg,message})
+          return ans
+        }
+        if(receiver==="clinic"){
+            const ans = await Message.create({pat_id:sendid,cli_id:receiveid,createdby,roomname,time,profileimg,message})
+            return ans
+          }
+  }
+  if(sender==="doctor"){
+    const ans = await Message.create({doc_id:sendid,pat_id:receiveid,createdby,roomname,time,profileimg,message})
+    return ans
+  }
+  if(sender==="clinic"){
+    const ans = await Message.create({cli_id:sendid,pat_id:receiveid,createdby:sender,roomname,time,profileimg,message})
+    return ans
+  }
+ }
+async function getmessages(body){
+   const {id,role} = body 
+   Message.belongsTo(Doctor,{foreignKey:"doc_id"})
+   Message.belongsTo(Clinic,{foreignKey:"cli_id"})
+   Message.belongsTo(Patient,{foreignKey:"pat_id"})
+   Doctor.hasMany(Message,{foreignKey:"doc_id"})
+   Patient.hasMany(Message,{foreignKey:"pat_id"})
+   Clinic.hasMany(Message,{foreignKey:"cli_id"})
+   if(role==="patient"){
+    const ans = await Message.findAll({where:{pat_id:id},attributes:["mess_id"],include:[Doctor,Clinic]})
+    const result = ans.map(s=>{
+        if(s.doctor!==null){
+            let x = {}
+            x.name = s.doctor.name
+            x.img = s.doctor.image
+            x.id = s.doctor.doc_id
+            x.role = "doctor"
+           return(x)
+        }
+        if(s.clinic!==null){
+            let x = {}
+            x.name = s.clinic.name
+            x.img = s.clinic.image
+            x.id = s.clinic.cli_id
+            x.role = "clinic"
+           return(x)
+         }
+    })
+    function getUnique(arr, comp) {
+       const unique =  arr.map(e => e[comp])
+      .map((e, i, final) => final.indexOf(e) === i && i)
+     .filter((e) => arr[e]).map(e => arr[e]);
+      return unique; 
+    }
+const answer = getUnique(result,'name')
+    return answer
+   }
+   if(role==="doctor"){
+    const ans = await Message.findAll({where:{doc_id:id},attributes:["mess_id"],include:[Patient]})
+    const result = ans.map(s=>{
+        if(s.patient){
+            let x = {}
+            x.name = s.patient.name
+            x.img = s.patient.image
+            x.id = s.patient.pat_id
+            x.role = "patient"
+           return(x)
+        }
+    })
+    function getUnique(arr, comp) {
+        const unique =  arr.map(e => e[comp])
+       .map((e, i, final) => final.indexOf(e) === i && i)
+      .filter((e) => arr[e]).map(e => arr[e]);
+       return unique; 
+     }
+ const answer = getUnique(result,'name')
+    return answer
+   }
+   if(role==="clinic"){
+    const ans = await Message.findAll({where:{cli_id:id},attributes:["mess_id"],include:[Patient]})
+    const result = ans.map(s=>{
+        if(s.patient){
+            let x = {}
+            x.name = s.patient.name
+            x.img = s.patient.image
+            x.id = s.patient.pat_id
+            x.role = "patient"
+           return(x)
+        
+        }
+    })
+    function getUnique(arr, comp) {
+        const unique =  arr.map(e => e[comp])
+       .map((e, i, final) => final.indexOf(e) === i && i)
+      .filter((e) => arr[e]).map(e => arr[e]);
+       return unique; 
+     }
+ const answer = getUnique(result,'name')
+    return answer
+   }
+}
+async function getmessagesbyroomname(body){
+    const {roomname} = body
+    const ans = await Message.findAll({where:{roomname}})
+    function getUnique(arr, comp) {
+        const unique =  arr.map(e => e[comp])
+       .map((e, i, final) => final.indexOf(e) === i && i)
+      .filter((e) => arr[e]).map(e => arr[e]);
+       return unique; 
+     }
+ const answer = getUnique(ans,'message')
+    return answer 
+}
 module.exports = {
     signupdoc,
     signuppat,
@@ -272,5 +387,8 @@ module.exports = {
     getappointments,
     patientdelete,
     docclidelete,
-    imageupload
+    imageupload,
+    getmessages,
+    postmessage,
+    getmessagesbyroomname
 }
